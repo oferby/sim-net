@@ -70,4 +70,9 @@ public class Switch extends AbstractDevice implements ForwardingDevice {
 
     }
 
+    @Override
+    public void portDown(ForwardingPort port) {
+
+    }
+
 }
