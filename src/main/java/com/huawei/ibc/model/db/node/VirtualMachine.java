@@ -1,10 +1,7 @@
 package com.huawei.ibc.model.db.node;
 
 import com.huawei.ibc.model.common.NodeType;
-import com.huawei.ibc.model.db.protocol.DhcpRequestPacket;
-import com.huawei.ibc.model.db.protocol.IpPacket;
-import com.huawei.ibc.model.db.protocol.MACAddress;
-import com.huawei.ibc.model.db.protocol.PathDiscoveryPacket;
+import com.huawei.ibc.model.db.protocol.*;
 
 public class VirtualMachine extends AbstractDevice {
 
@@ -14,7 +11,7 @@ public class VirtualMachine extends AbstractDevice {
 
 
     @Override
-    public void rx(ForwardingPort inPort, IpPacket packet) {
+    public void rx(ForwardingPort inPort, EthernetPacket packet) {
 
         if (packet instanceof PathDiscoveryPacket){
             this.handleDiscoveryPacket((PathDiscoveryPacket) packet);
@@ -23,7 +20,7 @@ public class VirtualMachine extends AbstractDevice {
     }
 
     @Override
-    public void tx(IpPacket packet) {
+    public void tx(EthernetPacket packet) {
 
         if (packet instanceof PathDiscoveryPacket){
             this.handleDiscoveryPacket((PathDiscoveryPacket) packet);
@@ -43,7 +40,7 @@ public class VirtualMachine extends AbstractDevice {
 
     }
 
-    public void tx(IpPacket packet, EthernetPort port){
+    public void tx(EthernetPacket packet, EthernetPort port){
 
     }
 

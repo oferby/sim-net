@@ -2,6 +2,7 @@ package com.huawei.ibc.model.db.node;
 
 import com.huawei.ibc.model.common.NodeType;
 import com.huawei.ibc.model.db.protocol.DhcpRequestPacket;
+import com.huawei.ibc.model.db.protocol.EthernetPacket;
 import com.huawei.ibc.model.db.protocol.IpPacket;
 import com.huawei.ibc.model.db.protocol.PathDiscoveryPacket;
 
@@ -12,7 +13,7 @@ public class Internet extends AbstractDevice {
     }
 
     @Override
-    public void rx(ForwardingPort inPort, IpPacket packet) {
+    public void rx(ForwardingPort inPort, EthernetPacket packet) {
 
         if (packet instanceof PathDiscoveryPacket) {
             PathDiscoveryPacket discoveryPacket = (PathDiscoveryPacket) packet;
@@ -29,7 +30,7 @@ public class Internet extends AbstractDevice {
     }
 
     @Override
-    public void tx(IpPacket packet) {
+    public void tx(EthernetPacket packet) {
 
     }
 

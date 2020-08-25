@@ -62,7 +62,7 @@ public abstract class AbstractDevice extends AbstractNode implements ForwardingD
     }
 
     @Override
-    public abstract void rx(ForwardingPort inPort, IpPacket packet);
+    public abstract void rx(ForwardingPort inPort, EthernetPacket packet);
 
     public List<EthernetPort> getEthernetPorts() {
         return (List<EthernetPort>) (List<?>) this.portList;

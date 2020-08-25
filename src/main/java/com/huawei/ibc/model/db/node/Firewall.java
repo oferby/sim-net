@@ -21,7 +21,7 @@ public class Firewall extends AbstractDevice {
 
 
     @Override
-    public void rx(ForwardingPort inPort, IpPacket packet) {
+    public void rx(ForwardingPort inPort, EthernetPacket packet) {
 
 
         if (packet instanceof PathDiscoveryPacket) {
@@ -38,7 +38,7 @@ public class Firewall extends AbstractDevice {
     }
 
     @Override
-    public void tx(IpPacket packet) {
+    public void tx(EthernetPacket packet) {
 
     }
 
@@ -47,7 +47,7 @@ public class Firewall extends AbstractDevice {
 
     }
 
-    private boolean isAllowed(IpPacket packet) {
+    private boolean isAllowed(EthernetPacket packet) {
 
         if (packet instanceof DhcpRequestPacket)
             return true;
@@ -55,12 +55,15 @@ public class Firewall extends AbstractDevice {
         if (packet instanceof TcpPacket)
             return isAllowed((TcpPacket)packet);
 
+        if (!(packet instanceof IpPacket))
+            return false;
+
         for (FirewallRule rule : firewallRules) {
 
-            if (rule.getSourceIp() != null && !rule.getSourceIp().getInfo().isInRange(packet.getSourceIp()))
+            if (rule.getSourceIp() != null && !rule.getSourceIp().getInfo().isInRange(((IpPacket)packet).getSourceIp()))
                 continue;
 
-            if (rule.getDestinationIp() != null && !rule.getDestinationIp().getInfo().isInRange(packet.getDestinationIp()))
+            if (rule.getDestinationIp() != null && !rule.getDestinationIp().getInfo().isInRange(((IpPacket)packet).getDestinationIp()))
                 continue;
 
             return rule.getAccessType() == AccessType.ALLOW;

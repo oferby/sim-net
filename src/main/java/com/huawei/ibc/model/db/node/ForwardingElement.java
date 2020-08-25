@@ -5,8 +5,8 @@ import com.huawei.ibc.model.db.protocol.IpPacket;
 
 public interface ForwardingElement {
 
-    void rx(IpPacket packet);
+    void rx(EthernetPacket packet);
 
-    void tx(IpPacket packet);
+    void tx(EthernetPacket packet);
 
 }

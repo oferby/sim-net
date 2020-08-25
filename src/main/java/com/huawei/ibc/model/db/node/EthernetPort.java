@@ -25,11 +25,12 @@ public class EthernetPort extends PromiscuousPort {
     }
 
     @Override
-    public void rx(IpPacket packet) {
+    public void rx(EthernetPacket packet) {
 
         logger.debug("got packet: " + packet);
 
-        this.addToArpTable(packet);
+        if (packet instanceof IpPacket)
+            this.addToArpTable((IpPacket)packet);
 
         if (packet.getDestinationMac().isBroadcast() || packet.getDestinationMac().equals(this.macAddress)) {
             this.device.rx(this, packet);
@@ -39,7 +40,7 @@ public class EthernetPort extends PromiscuousPort {
     }
 
     @Override
-    public void tx(IpPacket packet) {
+    public void tx(EthernetPacket packet) {
 
         packet.setSourceMac(this.macAddress);
         super.tx(packet);

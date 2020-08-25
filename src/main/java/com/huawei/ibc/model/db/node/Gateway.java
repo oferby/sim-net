@@ -11,12 +11,12 @@ public class Gateway extends AbstractDevice {
 
 
     @Override
-    public void rx(ForwardingPort inPort, IpPacket packet) {
+    public void rx(ForwardingPort inPort, EthernetPacket packet) {
 
     }
 
     @Override
-    public void tx(IpPacket packet) {
+    public void tx(EthernetPacket packet) {
 
     }
 

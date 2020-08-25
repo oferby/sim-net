@@ -16,14 +16,14 @@ public class PromiscuousPort implements ForwardingPort {
     }
 
     @Override
-    public void rx(IpPacket packet) {
+    public void rx(EthernetPacket packet) {
 
         device.rx(this, packet);
 
     }
 
     @Override
-    public void tx(IpPacket packet) {
+    public void tx(EthernetPacket packet) {
 
         packet.setTtl();
         connectedTo.rx(packet);

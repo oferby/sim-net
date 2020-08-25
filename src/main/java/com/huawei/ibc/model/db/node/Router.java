@@ -1,10 +1,7 @@
 package com.huawei.ibc.model.db.node;
 
 import com.huawei.ibc.model.common.NodeType;
-import com.huawei.ibc.model.db.protocol.DhcpRequestPacket;
-import com.huawei.ibc.model.db.protocol.IpPacket;
-import com.huawei.ibc.model.db.protocol.MACAddress;
-import com.huawei.ibc.model.db.protocol.PathDiscoveryPacket;
+import com.huawei.ibc.model.db.protocol.*;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.net.util.SubnetUtils;
 import org.slf4j.Logger;
@@ -22,7 +19,7 @@ public class Router extends AbstractDevice implements ForwardingDevice {
     }
 
     @Override
-    public void rx(ForwardingPort inPort, IpPacket packet) {
+    public void rx(ForwardingPort inPort, EthernetPacket packet) {
 
         logger.debug("received packet: " + packet);
 
@@ -88,7 +85,7 @@ public class Router extends AbstractDevice implements ForwardingDevice {
 
 
     @Override
-    public void tx(IpPacket packet) {
+    public void tx(EthernetPacket packet) {
 
     }
 

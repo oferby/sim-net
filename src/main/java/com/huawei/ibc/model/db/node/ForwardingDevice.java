@@ -1,12 +1,13 @@
 package com.huawei.ibc.model.db.node;
 
+import com.huawei.ibc.model.db.protocol.EthernetPacket;
 import com.huawei.ibc.model.db.protocol.IpPacket;
 
 public interface ForwardingDevice{
 
-    void rx(ForwardingPort inPort, IpPacket packet);
+    void rx(ForwardingPort inPort, EthernetPacket packet);
 
-    void tx(IpPacket packet);
+    void tx(EthernetPacket packet);
 
     void portUp(ForwardingPort port);
 

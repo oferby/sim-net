@@ -22,7 +22,7 @@ public class Switch extends AbstractDevice implements ForwardingDevice {
 
 
     @Override
-    public void rx(ForwardingPort inPort, IpPacket packet) {
+    public void rx(ForwardingPort inPort, EthernetPacket packet) {
 
         forwardingPortMap.put(packet.getSourceMac(), inPort);
 
@@ -44,7 +44,7 @@ public class Switch extends AbstractDevice implements ForwardingDevice {
 
     }
 
-    private void flood(ForwardingPort inPort, IpPacket packet){
+    private void flood(ForwardingPort inPort, EthernetPacket packet){
 
         List<ForwardingPort> portList = super.getPortList();
 
@@ -61,7 +61,7 @@ public class Switch extends AbstractDevice implements ForwardingDevice {
 
 
     @Override
-    public void tx(IpPacket packet) {
+    public void tx(EthernetPacket packet) {
 
     }
 
