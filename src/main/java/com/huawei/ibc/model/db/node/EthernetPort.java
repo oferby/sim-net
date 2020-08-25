@@ -34,7 +34,6 @@ public class EthernetPort extends PromiscuousPort {
 
         if (packet.getDestinationMac().isBroadcast() || packet.getDestinationMac().equals(this.macAddress)) {
             this.device.rx(this, packet);
-            return;
         }
 
     }

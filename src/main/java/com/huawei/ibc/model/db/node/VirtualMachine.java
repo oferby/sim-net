@@ -40,6 +40,11 @@ public class VirtualMachine extends AbstractDevice {
 
     }
 
+    @Override
+    public void portDown(ForwardingPort port) {
+
+    }
+
     public void tx(EthernetPacket packet, EthernetPort port){
 
     }
