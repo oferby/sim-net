@@ -150,6 +150,9 @@ public class IntentBuilder {
             case "switch":
                 this.sendNamedIntent("addSwitch");
                 break;
+            case "mpls switch":
+                this.sendNamedIntent("addMplsSwitch");
+                break;
             case "firewall":
                 this.sendNamedIntent("addFirewall");
                 break;

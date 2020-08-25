@@ -43,14 +43,15 @@ public abstract class AbstractDevice extends AbstractNode implements ForwardingD
     public ForwardingPort addPort(MACAddress macAddress) {
 
         ForwardingPort port;
-        if (this instanceof Switch || this instanceof Firewall) {
+        if (this instanceof Switch || this instanceof Firewall ) {
             port = new PromiscuousPort(this);
+        } else if (this instanceof MplsSwitch) {
+            port = new MplsPort(this);
         } else {
             port = new EthernetPort(macAddress, this);
         }
 
         portList.add(port);
-
 
         return port;
     }

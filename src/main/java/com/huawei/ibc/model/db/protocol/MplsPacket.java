@@ -1,6 +1,6 @@
 package com.huawei.ibc.model.db.protocol;
 
-public class MplsPacket extends EthernetPacket{
+public class MplsPacket extends IpPacket{
 
     private Integer label;
     private Short trafficClass;

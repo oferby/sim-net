@@ -75,6 +75,16 @@ public class DatabaseControllerImpl {
 
     }
 
+    public MplsSwitch createMplsSwitch(String name) {
+        this.validateUniqueName(name);
+        MplsSwitch mplsSwitch = new MplsSwitch(name);
+        nodeMap.put(name.toLowerCase(), mplsSwitch);
+
+        return mplsSwitch;
+    }
+
+
+
     public Router createRouter(String name) {
 
         this.validateUniqueName(name);

@@ -22,6 +22,9 @@ public class GraphNode extends GraphEntity{
             case SWITCH:
                 this.setNodeClass("switch");
                 break;
+            case MPLS_SWITCH:
+                this.setNodeClass("mplsSwitch");
+                break;
             case GATEWAY:
                 this.setNodeClass("gateway");
                 break;

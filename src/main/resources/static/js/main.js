@@ -36,6 +36,12 @@ function createGraph(){
                         }
                     },
                     {
+                        selector: '.mplsSwitch',
+                        style: {
+                            'background-image': 'images/mpls-switch.png'
+                        }
+                    },
+                    {
                         selector: '.acl',
                         style: {
                             'background-image': 'images/acl.png'

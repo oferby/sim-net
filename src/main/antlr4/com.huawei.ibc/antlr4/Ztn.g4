@@ -234,7 +234,7 @@ DELETE      : ( 'delete' | 'remove' ) ;
 ALLOW       : ( 'allow' | 'grant' | 'permit' ) ;
 DENY        : ( 'deny' | 'revoke' ) ;
 
-ENTITY      : ('router' | 'vm' | 'virtual machine' | 'ecs' | 'server'| 'switch' |  'firewall' | 'service' | 'application') 's'? ;
+ENTITY      : ('router' | 'vm' | 'virtual machine' | 'ecs' | 'server'| 'switch' |  'firewall' | 'service' | 'application' | 'mpls switch') 's'? ;
 PROTOCOL    : ('mpls' | 'ethernet') ;
 DEMO        : 'demo' ;
 

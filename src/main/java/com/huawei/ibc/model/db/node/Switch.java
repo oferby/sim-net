@@ -12,14 +12,11 @@ import java.util.Map;
 
 public class Switch extends AbstractDevice implements ForwardingDevice {
 
-    private Map<MACAddress, ForwardingPort> forwardingPortMap = new HashMap<>();
-
-//    private Map<String,ForwardingPort> forwardingPortMap = new HashMap<>();
+    private final Map<MACAddress, ForwardingPort> forwardingPortMap = new HashMap<>();
 
     public Switch(String id) {
         super(id, NodeType.SWITCH);
     }
-
 
     @Override
     public void rx(ForwardingPort inPort, EthernetPacket packet) {

@@ -11,9 +11,9 @@ import java.util.TreeSet;
 
 public class Firewall extends AbstractDevice {
 
-    private boolean defaultAccessType = true;
+    private final boolean defaultAccessType = true;
 
-    private Set<FirewallRule> firewallRules = new TreeSet<>();
+    private final Set<FirewallRule> firewallRules = new TreeSet<>();
 
     public Firewall(String id) {
         super(id, NodeType.FIREWALL);

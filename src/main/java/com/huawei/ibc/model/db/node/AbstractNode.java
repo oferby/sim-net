@@ -4,8 +4,8 @@ import com.huawei.ibc.model.common.NodeType;
 
 public class AbstractNode {
 
-    private String id;
-    private NodeType nodeType;
+    private final String id;
+    private final NodeType nodeType;
 
     public AbstractNode(String id, NodeType nodeType) {
         this.id = id;

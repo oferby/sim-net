@@ -57,6 +57,9 @@ public class GraphController {
                 case "addSwitch":
                     graphEntityList.add(addSwitch(intentMessage));
                     return graphEntityList;
+                case "addMplsSwitch":
+                    graphEntityList.add(addMplsSwitch(intentMessage));
+                    return graphEntityList;
                 case "connectNodes":
                     graphEntityList.addAll(createNodeConnection(intentMessage));
                     return graphEntityList;
@@ -353,6 +356,11 @@ public class GraphController {
         VirtualMachine vm = databaseController.createVirtualMachine(this.getNodeName(intentMessage));
         return this.createGraphNode(vm);
 
+    }
+
+    private GraphEntity addMplsSwitch(IntentMessage intentMessage) {
+        MplsSwitch mplsSwitch = databaseController.createMplsSwitch(this.getNodeName(intentMessage));
+        return this.createGraphNode(mplsSwitch);
     }
 
     private GraphEntity addRouter(IntentMessage intentMessage) {
