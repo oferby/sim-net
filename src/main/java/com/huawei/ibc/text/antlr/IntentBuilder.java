@@ -8,6 +8,8 @@ import com.huawei.ibc.service.WebSockServiceImpl;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,8 @@ public class IntentBuilder {
 
     private Map<String, String> values;
     private IntentMessage intentMessage;
+
+    private static final Logger logger = LoggerFactory.getLogger(IntentBuilder.class);
 
     public IntentBuilder(WebSockServiceImpl sockService, GraphController graphController, IntentMessage intentMessage) {
         this.sockService = sockService;
@@ -54,6 +58,9 @@ public class IntentBuilder {
         this.values = znContext.values;
 
         switch (this.values.get("operator")) {
+            case "config":
+                this.configIntent();
+                break;
             case "show":
                 this.showIntent();
                 break;
@@ -95,6 +102,16 @@ public class IntentBuilder {
                 throw new RuntimeException("unknown operator");
 
         }
+
+    }
+
+
+    private void configIntent() {
+
+        String configType = this.values.get("configure");
+
+        if (configType.equals("ip"))
+            graphController.setupEdgeIpAddress();
 
     }
 
@@ -312,7 +329,7 @@ public class IntentBuilder {
 
     }
 
-    private void setPolicy(){
+    private void setPolicy() {
 
         intentMessage.addParam("name", this.values.get("name"));
         intentMessage.addParam("operation", this.values.get("rights"));
@@ -322,7 +339,7 @@ public class IntentBuilder {
 
     }
 
-    private void addToGroup(){
+    private void addToGroup() {
 
         intentMessage.addParam("node", this.values.get("name"));
         intentMessage.addParam("group", this.values.get("group"));

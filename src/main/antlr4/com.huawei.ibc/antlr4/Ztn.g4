@@ -17,7 +17,8 @@ grammar Ztn;
 
 zn  returns [Map<String,String> values]
         :
-        ( showCommand { $values = $showCommand.values; }
+        ( configCommand { $values = $configCommand.values; }
+        | showCommand { $values = $showCommand.values; }
         | findPathCommand { $values = $findPathCommand.values; }
         | newCommand { $values = $newCommand.values; }
         | delCommand { $values = $delCommand.values; }
@@ -31,6 +32,14 @@ zn  returns [Map<String,String> values]
         | addToGroupCommand { $values = $addToGroupCommand.values; }
         )
         ;
+configCommand returns [Map<String,String> values]
+        : ( config | setup ) ip
+        {
+                $values = new HashMap<String,String>();
+                $values.put("operator", "config");
+                $values.put("configure", "ip");
+        };
+
 
 showCommand returns [Map<String,String> values]
         : show (a='all')? (e=extEntity)? (n=name)?
@@ -187,6 +196,7 @@ delOperator : DELETE ;
 search      : SEARCH ;
 connect     : CONNECT;
 protocol    : PROTOCOL;
+ip          : IP;
 disconnect  : DISCONNECT;
 allow       : ALLOW;
 deny        : DENY;
@@ -197,6 +207,8 @@ policy      : POLICY ;
 group       : GROUP ;
 name        : NAME ;
 searchble   : SEARCHABLE ;
+setup       : SETUP;
+config      : CONFIG;
 
 
 /*
@@ -208,6 +220,7 @@ fragment UPPERCASE  : [A-Z] ;
 fragment DIGIT      : [0-9]+ ;
 
 FROM        : 'from' ;
+FOR         : 'for' ;
 TO          : 'to' ;
 AND         : 'and' ;
 WITH        : 'with';
@@ -235,8 +248,12 @@ ALLOW       : ( 'allow' | 'grant' | 'permit' ) ;
 DENY        : ( 'deny' | 'revoke' ) ;
 
 ENTITY      : ('router' | 'vm' | 'virtual machine' | 'ecs' | 'server'| 'switch' |  'firewall' | 'service' | 'application' | 'mpls switch') 's'? ;
-PROTOCOL    : ('mpls' | 'ethernet') ;
+PROTOCOL    : ('mpls' | 'ethernet' ) ;
+IP          : 'ip';
+
 DEMO        : 'demo' ;
+SETUP       : 'setup';
+CONFIG      : ( 'config' | 'configure' );
 
 NEWLINE     : ('\r'? '\n' | '\r')+ ;
 NAME        : ( LOWERCASE | UPPERCASE | DIGIT | '_' | '-')+ ;

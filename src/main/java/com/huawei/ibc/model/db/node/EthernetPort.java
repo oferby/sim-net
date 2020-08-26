@@ -10,7 +10,7 @@ import java.util.Set;
 
 public class EthernetPort extends PromiscuousPort {
 
-    private static final Logger logger = LoggerFactory.getLogger(EthernetPacket.class);
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private MACAddress macAddress;
     private SubnetUtils subnetUtils;

@@ -1,6 +1,7 @@
 package com.huawei.ibc.model.controller;
 
 import com.huawei.ibc.model.common.GroupType;
+import com.huawei.ibc.model.common.NodeType;
 import com.huawei.ibc.model.db.node.*;
 import com.huawei.ibc.model.db.protocol.DhcpRequestPacket;
 import org.apache.commons.net.util.SubnetUtils;
@@ -46,6 +47,18 @@ public class DatabaseControllerImpl {
 
     public <T extends AbstractNode> T getNodeByIdAndType(String id, Class<T> type) {
         return type.cast(nodeMap.get(id.toLowerCase()));
+    }
+
+    public List<AbstractNode> getAllNodesByType(NodeType type) {
+        List<AbstractNode> nodes = new ArrayList<>();
+        for (AbstractNode node : nodeMap.values()) {
+            if (node.getNodeType().equals(type))
+                nodes.add(node);
+
+        }
+
+        return nodes;
+
     }
 
 

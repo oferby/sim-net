@@ -9,6 +9,9 @@ import com.huawei.ibc.model.common.*;
 import com.huawei.ibc.model.db.node.*;
 import com.huawei.ibc.service.PolicyController;
 import com.huawei.ibc.service.WebSockServiceImpl;
+import org.apache.commons.net.util.SubnetUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
@@ -34,6 +37,26 @@ public class GraphController {
 
     @Autowired
     private PolicyController policyController;
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    public void setupEdgeIpAddress(){
+
+        logger.debug("setting up IP address for all VMs");
+        List<AbstractNode> computeNodes = databaseController.getAllNodesByType(NodeType.COMPUTE_NODE);
+
+        SubnetUtils subnet = new SubnetUtils("192.168.0.1", "255.255.0.0");
+        String[] allAddresses = subnet.getInfo().getAllAddresses();
+        int i = 0;
+        for (AbstractNode computeNode : computeNodes) {
+            List<EthernetPort> ethernetPorts = ((AbstractDevice) computeNode).getEthernetPorts();
+            for (EthernetPort ethernetPort : ethernetPorts) {
+                ethernetPort.setIpAddress(allAddresses[i++] + "/16");
+            }
+
+        }
+
+    }
 
     public List<GraphEntity> getGraphEntity(IntentMessage intentMessage) {
 
