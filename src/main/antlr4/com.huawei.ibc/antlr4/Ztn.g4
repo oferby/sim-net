@@ -39,7 +39,7 @@ configCommand returns [Map<String,String> values]
                 $values.put("operator", "config");
                 if ($p.text != null)
                     $values.put("configure", "ip");
-                if ($m.text.equals("mpls"))
+                if ($m.text != null && $m.text.equals("mpls"))
                     $values.put("configure", "mpls-path");
 
         };

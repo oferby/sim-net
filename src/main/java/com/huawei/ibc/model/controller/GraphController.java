@@ -56,6 +56,8 @@ public class GraphController {
 
         }
 
+
+
     }
 
     public void setupMplsPathForAllEdges() {
@@ -668,6 +670,33 @@ public class GraphController {
             }
         }
 
+        Random r = new Random();
+        int h = 0;
+
+        for (int i = 10; i < 20; i++) {
+            MplsSwitch mplsSwitch = databaseController.createMplsSwitch("SW" + i);
+            entities.add(createGraphNode(mplsSwitch));
+
+            int rand = r.nextInt(3);
+
+            for (int j = 0; j < 4; j++) {
+                if (j == rand)
+                    continue;
+
+                MplsSwitch target = mplsSwitches.get(j);
+                databaseController.createNodeConnection(mplsSwitch, target);
+                entities.add(createGraphEdge(mplsSwitch,target));
+
+                for (int k = 0; k < 10; k++) {
+                    VirtualMachine virtualMachine = databaseController.createVirtualMachine("vm" + ++h);
+                    entities.add(createGraphNode(virtualMachine));
+                    databaseController.createNodeConnection(mplsSwitch,virtualMachine);
+                    entities.add(createGraphEdge(mplsSwitch,virtualMachine));
+                }
+
+            }
+
+        }
 
         return entities;
     }

@@ -8,6 +8,8 @@ The following commands add 2 VMs and connect them with switch and a router
 - add vm
 - connect node10 and node11
 
+# MPLS demo
+- create demo 3
 
 # configure connected VMs with IP
 if the VMs are not connected to a router, they will not get IP address.
