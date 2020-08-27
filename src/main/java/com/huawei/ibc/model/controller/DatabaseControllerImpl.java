@@ -97,7 +97,6 @@ public class DatabaseControllerImpl {
     }
 
 
-
     public Router createRouter(String name) {
 
         this.validateUniqueName(name);
@@ -137,6 +136,7 @@ public class DatabaseControllerImpl {
         return application;
     }
 
+
     public List<AbstractDevice> createNodeConnection(String sourceId, String targetId) {
 
         AbstractDevice sourceDevice = (AbstractDevice) nodeMap.get(sourceId.toLowerCase());
@@ -146,6 +146,12 @@ public class DatabaseControllerImpl {
         if (targetDevice == null || sourceDevice == null) {
             throw new RuntimeException("could not connect " + sourceId + " and " + targetId);
         }
+
+        return createNodeConnection(sourceDevice, targetDevice);
+
+    }
+
+    public List<AbstractDevice> createNodeConnection(AbstractDevice sourceDevice, AbstractDevice targetDevice) {
 
         ForwardingPort sourcePort = sourceDevice.addPort(addressController.getMacAddress());
         ForwardingPort targetPort = targetDevice.addPort(addressController.getMacAddress());
@@ -165,7 +171,7 @@ public class DatabaseControllerImpl {
         return devices;
     }
 
-    private void addSubnetToRouter(EthernetPort routerPort){
+    private void addSubnetToRouter(EthernetPort routerPort) {
 
         Subnet subnet = addressController.getNewSubnet();
 

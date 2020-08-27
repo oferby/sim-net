@@ -33,11 +33,15 @@ zn  returns [Map<String,String> values]
         )
         ;
 configCommand returns [Map<String,String> values]
-        : ( config | setup ) ip
+        : ( config | setup ) (p = ip | (m=protocol) searchble )
         {
                 $values = new HashMap<String,String>();
                 $values.put("operator", "config");
-                $values.put("configure", "ip");
+                if ($p.text != null)
+                    $values.put("configure", "ip");
+                if ($m.text.equals("mpls"))
+                    $values.put("configure", "mpls-path");
+
         };
 
 
@@ -197,6 +201,7 @@ search      : SEARCH ;
 connect     : CONNECT;
 protocol    : PROTOCOL;
 ip          : IP;
+mpls        : MPLS;
 disconnect  : DISCONNECT;
 allow       : ALLOW;
 deny        : DENY;
@@ -250,6 +255,7 @@ DENY        : ( 'deny' | 'revoke' ) ;
 ENTITY      : ('router' | 'vm' | 'virtual machine' | 'ecs' | 'server'| 'switch' |  'firewall' | 'service' | 'application' | 'mpls switch') 's'? ;
 PROTOCOL    : ('mpls' | 'ethernet' ) ;
 IP          : 'ip';
+MPLS        : 'mpls';
 
 DEMO        : 'demo' ;
 SETUP       : 'setup';

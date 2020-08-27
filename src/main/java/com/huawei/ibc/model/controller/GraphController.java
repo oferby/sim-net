@@ -40,7 +40,7 @@ public class GraphController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public void setupEdgeIpAddress(){
+    public void setupEdgeIpAddress() {
 
         logger.debug("setting up IP address for all VMs");
         List<AbstractNode> computeNodes = databaseController.getAllNodesByType(NodeType.COMPUTE_NODE);
@@ -58,7 +58,16 @@ public class GraphController {
 
     }
 
+    public void setupMplsPathForAllEdges() {
+
+        List<AbstractNode> computeNodes = databaseController.getAllNodesByType(NodeType.COMPUTE_NODE);
+
+
+    }
+
     public List<GraphEntity> getGraphEntity(IntentMessage intentMessage) {
+
+        logger.debug("handling intent: " + intentMessage.toString());
 
         String intent = intentMessage.getIntent();
         List<GraphEntity> graphEntityList = new ArrayList<>();
@@ -71,6 +80,8 @@ public class GraphController {
                     return buildDemo(intentMessage);
                 case "buildDemo2":
                     return this.buildDemo2(intentMessage);
+                case "buildMplsDemo":
+                    return this.buildMplsDemo(intentMessage);
                 case "addVm":
                     graphEntityList.add(addVm(intentMessage));
                     return graphEntityList;
@@ -607,13 +618,13 @@ public class GraphController {
         Firewall fw1 = databaseController.createFirewall("FW1");
         entities.add(this.createGraphNode(fw1));
 
-        databaseController.createNodeConnection(sw2.getId(), fw1.getId());
+        databaseController.createNodeConnection(sw2, fw1);
         entities.add(this.createGraphEdge(sw2.getId(), fw1.getId()));
 
 
         VirtualMachine db1 = databaseController.createVirtualMachine("DB1");
         entities.add(this.createGraphNode(db1));
-        databaseController.createNodeConnection(fw1.getId(), db1.getId());
+        databaseController.createNodeConnection(fw1, db1);
         entities.add(this.createGraphEdge(fw1.getId(), db1.getId()));
 
         Application mySQL = databaseController.createApplication("MySQL", (short) 3306);
@@ -632,6 +643,31 @@ public class GraphController {
         policy.setTo(db1);
         policy.setFrom(group);
         policy.setAccessType(AccessType.ALLOW);
+
+        return entities;
+    }
+
+    private List<GraphEntity> buildMplsDemo(IntentMessage intentMessage) {
+        webSockService.sendClearLocalIntent();
+
+        List<GraphEntity> entities = new ArrayList<>();
+        List<MplsSwitch> mplsSwitches = new ArrayList<>();
+
+        for (int i = 0; i < 4; i++) {
+            MplsSwitch mplsSwitch = databaseController.createMplsSwitch("SW" + i);
+            mplsSwitches.add(mplsSwitch);
+            entities.add(createGraphNode(mplsSwitch));
+        }
+
+        for (int i = 0; i < 3; i++) {
+            MplsSwitch source = mplsSwitches.get(i);
+            for (int j = i + 1; j < 4; j++) {
+                MplsSwitch target = mplsSwitches.get(j);
+                databaseController.createNodeConnection(source,target);
+                entities.add(createGraphEdge(source,target));
+            }
+        }
+
 
         return entities;
     }

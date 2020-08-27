@@ -112,6 +112,8 @@ public class IntentBuilder {
 
         if (configType.equals("ip"))
             graphController.setupEdgeIpAddress();
+        else if (configType.equals("mpls-path"))
+            graphController.setupMplsPathForAllEdges();
 
     }
 
@@ -312,13 +314,18 @@ public class IntentBuilder {
             case "2":
                 intentMessage.setIntent("buildDemo2");
                 break;
+            case "3":
+                intentMessage.setIntent("buildMplsDemo");
+                break;
             default:
+                this.sendError("not supported");
                 throw new RuntimeException("not supported");
         }
 
         intentMessage.setStatus(IntentStatus.DONE);
         sockService.sendClearLocalIntent();
         List<GraphEntity> graphEntities = graphController.getGraphEntity(intentMessage);
+
         sockService.sendGraphEntities(graphEntities);
     }
 
@@ -378,6 +385,11 @@ public class IntentBuilder {
 
     private void handleInputError() {
         this.sockService.sendUnknownInput();
+    }
+
+    private void sendError(String error) {
+        IntentMessage intentMessage = new IntentMessage(error, IntentStatus.ERROR, null);
+        sockService.sendIntent(intentMessage);
     }
 
 }

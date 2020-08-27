@@ -66,4 +66,14 @@ public class IntentMessage {
         }
         params.put(key, value);
     }
+
+    @Override
+    public String toString() {
+        return "IntentMessage{" +
+                "hint='" + hint + '\'' +
+                ", status=" + status +
+                ", intent='" + intent + '\'' +
+                ", params=" + params +
+                '}';
+    }
 }
