@@ -56,7 +56,7 @@ public class GraphController {
 
         }
 
-
+        this.sendInfo("IP address configured for all VMs");
 
     }
 
@@ -82,6 +82,8 @@ public class GraphController {
                     return buildDemo(intentMessage);
                 case "buildDemo2":
                     return this.buildDemo2(intentMessage);
+                case "buildSmallMplsDemo":
+                    return this.buildSmallMplsDemo(intentMessage);
                 case "buildMplsDemo":
                     return this.buildMplsDemo(intentMessage);
                 case "addVm":
@@ -649,6 +651,44 @@ public class GraphController {
         return entities;
     }
 
+    private List<GraphEntity> buildSmallMplsDemo(IntentMessage intentMessage) {
+        webSockService.sendClearLocalIntent();
+
+        List<GraphEntity> entities = new ArrayList<>();
+        List<MplsSwitch> mplsSwitches = new ArrayList<>();
+
+        for (int i = 0; i < 4; i++) {
+            MplsSwitch mplsSwitch = databaseController.createMplsSwitch("SW" + i);
+            mplsSwitches.add(mplsSwitch);
+            entities.add(createGraphNode(mplsSwitch));
+        }
+
+        for (int i = 0; i < 3; i++) {
+            MplsSwitch source = mplsSwitches.get(i);
+            for (int j = i + 1; j < 4; j++) {
+                MplsSwitch target = mplsSwitches.get(j);
+                databaseController.createNodeConnection(source, target);
+                entities.add(createGraphEdge(source, target));
+            }
+        }
+
+        MplsSwitch sw = (MplsSwitch) databaseController.getNodeById("SW1");
+
+        VirtualMachine virtualMachine = databaseController.createVirtualMachine("vm1");
+        entities.add(createGraphNode(virtualMachine));
+        databaseController.createNodeConnection(sw, virtualMachine);
+        entities.add(createGraphEdge(sw, virtualMachine));
+
+        sw = (MplsSwitch) databaseController.getNodeById("SW2");
+
+        virtualMachine = databaseController.createVirtualMachine("vm2");
+        entities.add(createGraphNode(virtualMachine));
+        databaseController.createNodeConnection(sw, virtualMachine);
+        entities.add(createGraphEdge(sw, virtualMachine));
+
+        return entities;
+    }
+
     private List<GraphEntity> buildMplsDemo(IntentMessage intentMessage) {
         webSockService.sendClearLocalIntent();
 
@@ -665,8 +705,8 @@ public class GraphController {
             MplsSwitch source = mplsSwitches.get(i);
             for (int j = i + 1; j < 4; j++) {
                 MplsSwitch target = mplsSwitches.get(j);
-                databaseController.createNodeConnection(source,target);
-                entities.add(createGraphEdge(source,target));
+                databaseController.createNodeConnection(source, target);
+                entities.add(createGraphEdge(source, target));
             }
         }
 
@@ -685,13 +725,13 @@ public class GraphController {
 
                 MplsSwitch target = mplsSwitches.get(j);
                 databaseController.createNodeConnection(mplsSwitch, target);
-                entities.add(createGraphEdge(mplsSwitch,target));
+                entities.add(createGraphEdge(mplsSwitch, target));
 
                 for (int k = 0; k < 10; k++) {
                     VirtualMachine virtualMachine = databaseController.createVirtualMachine("vm" + ++h);
                     entities.add(createGraphNode(virtualMachine));
-                    databaseController.createNodeConnection(mplsSwitch,virtualMachine);
-                    entities.add(createGraphEdge(mplsSwitch,virtualMachine));
+                    databaseController.createNodeConnection(mplsSwitch, virtualMachine);
+                    entities.add(createGraphEdge(mplsSwitch, virtualMachine));
                 }
 
             }
@@ -787,6 +827,10 @@ public class GraphController {
     private void sendError(String error) {
         IntentMessage intentMessage = new IntentMessage(error, IntentStatus.ERROR, null);
         webSockService.sendIntent(intentMessage);
+    }
+
+    private void sendInfo(String text){
+        webSockService.sendInfo(text);
     }
 
 

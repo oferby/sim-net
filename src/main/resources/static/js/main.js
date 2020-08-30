@@ -118,7 +118,7 @@ var stompClient = null;
 
 var hasAlert = false;
 
-var hasUnknown = false;
+var hasInfo = false;
 
 function connect() {
     var socket = new SockJS('/intent-websocket');
@@ -248,16 +248,16 @@ function doInfo(res) {
         $info.css('bottom', '125%');
         $info.css('z-index', '2');
 
-    } else if (res.params['type'] == 'unknownRequest') {
+    } else {
 
         var $info = $('#info');
-        $info.text(res.params['question']);
+        $info.text(res.params['text']);
 
         $info.css('opacity', '1');
         $info.css('bottom', '125%');
         $info.css('z-index', '2');
 
-        hasUnknown = true;
+        hasInfo = true;
 
     }
 
@@ -340,7 +340,7 @@ function clearUnknown() {
     $info.css('opacity', '0');
     $info.css('bottom', '0%');
     $info.css('z-index', '-1');
-    hasUnknown = false;
+    hasInfo = false;
 
 }
 
@@ -352,7 +352,7 @@ $(document).ready(function(){
             if (hasAlert)
                 clearAlert();
 
-            if (hasUnknown)
+            if (hasInfo)
                 clearUnknown();
 
             lastCommand = $("#input").val();

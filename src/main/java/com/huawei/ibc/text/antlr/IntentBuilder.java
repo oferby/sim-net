@@ -315,6 +315,9 @@ public class IntentBuilder {
                 intentMessage.setIntent("buildDemo2");
                 break;
             case "3":
+                intentMessage.setIntent("buildSmallMplsDemo");
+                break;
+            case "4":
                 intentMessage.setIntent("buildMplsDemo");
                 break;
             default:

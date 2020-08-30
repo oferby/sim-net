@@ -46,4 +46,12 @@ public class WebSockServiceImpl {
         template.convertAndSend("/topic/hint",intentMessage);
     }
 
+    public void sendInfo(String text){
+
+        IntentMessage intentMessage = new IntentMessage();
+        intentMessage.setStatus(IntentStatus.INFO);
+        intentMessage.addParam("text", text);
+        template.convertAndSend("/topic/hint",intentMessage);
+    }
+
 }
