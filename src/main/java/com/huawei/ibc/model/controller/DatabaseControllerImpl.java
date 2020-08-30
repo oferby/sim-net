@@ -50,6 +50,7 @@ public class DatabaseControllerImpl {
     }
 
     public List<AbstractNode> getAllNodesByType(NodeType type) {
+
         List<AbstractNode> nodes = new ArrayList<>();
         for (AbstractNode node : nodeMap.values()) {
             if (node.getNodeType().equals(type))

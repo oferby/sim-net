@@ -32,6 +32,7 @@ zn  returns [Map<String,String> values]
         | addToGroupCommand { $values = $addToGroupCommand.values; }
         )
         ;
+
 configCommand returns [Map<String,String> values]
         : ( config | setup ) (p = ip | (m=protocol) searchble )
         {

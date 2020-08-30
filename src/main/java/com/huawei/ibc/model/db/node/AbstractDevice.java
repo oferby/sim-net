@@ -6,10 +6,7 @@ import com.huawei.ibc.model.db.protocol.IpPacket;
 import com.huawei.ibc.model.db.protocol.MACAddress;
 import org.apache.commons.net.util.SubnetUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class AbstractDevice extends AbstractNode implements ForwardingDevice {
 
@@ -65,8 +62,8 @@ public abstract class AbstractDevice extends AbstractNode implements ForwardingD
     @Override
     public abstract void rx(ForwardingPort inPort, EthernetPacket packet);
 
-    public List<EthernetPort> getEthernetPorts() {
-        return (List<EthernetPort>) (List<?>) this.portList;
+    public List<ForwardingPort> getForwardingPorts() {
+        return this.portList;
     }
 
     public EthernetPort getPort(int number) {
@@ -84,8 +81,8 @@ public abstract class AbstractDevice extends AbstractNode implements ForwardingD
     }
 
     protected boolean isForMyIp(IpPacket ipPacket) {
-        for (EthernetPort port : this.getEthernetPorts()) {
-            if (ipPacket.getDestinationIp().equals(port.getIpAddress()))
+        for (ForwardingPort port : this.getForwardingPorts()) {
+            if (ipPacket.getDestinationIp().equals(((EthernetPort)port).getIpAddress()))
                 return true;
         }
 
@@ -94,8 +91,8 @@ public abstract class AbstractDevice extends AbstractNode implements ForwardingD
 
     protected boolean isForMyMac(IpPacket packet) {
 
-        for (EthernetPort port : this.getEthernetPorts()) {
-            if (packet.getDestinationMac().equals(port.getMacAddress()))
+        for (ForwardingPort port : this.getForwardingPorts()) {
+            if (packet.getDestinationMac().equals(((EthernetPort)port).getMacAddress()))
                 return true;
         }
 
@@ -107,4 +104,18 @@ public abstract class AbstractDevice extends AbstractNode implements ForwardingD
         this.arpTable.put(ip, macAddress);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        AbstractDevice that = (AbstractDevice) o;
+        return Objects.equals(portList, that.portList) &&
+                Objects.equals(arpTable, that.arpTable);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), portList, arpTable);
+    }
 }

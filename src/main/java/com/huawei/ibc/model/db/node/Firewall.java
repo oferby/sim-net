@@ -6,6 +6,7 @@ import com.huawei.ibc.model.common.NodeType;
 import com.huawei.ibc.model.db.protocol.*;
 import org.apache.commons.net.util.SubnetUtils;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -152,5 +153,20 @@ public class Firewall extends AbstractDevice {
 
     public Set<FirewallRule> getFirewallRules() {
         return firewallRules;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Firewall firewall = (Firewall) o;
+        return defaultAccessType == firewall.defaultAccessType &&
+                Objects.equals(firewallRules, firewall.firewallRules);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), defaultAccessType, firewallRules);
     }
 }

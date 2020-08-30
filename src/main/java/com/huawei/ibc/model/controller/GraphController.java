@@ -13,7 +13,6 @@ import org.apache.commons.net.util.SubnetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import java.util.*;
@@ -49,9 +48,9 @@ public class GraphController {
         String[] allAddresses = subnet.getInfo().getAllAddresses();
         int i = 0;
         for (AbstractNode computeNode : computeNodes) {
-            List<EthernetPort> ethernetPorts = ((AbstractDevice) computeNode).getEthernetPorts();
-            for (EthernetPort ethernetPort : ethernetPorts) {
-                ethernetPort.setIpAddress(allAddresses[i++] + "/16");
+            List<ForwardingPort> ethernetPorts = ((AbstractDevice) computeNode).getForwardingPorts();
+            for (ForwardingPort ethernetPort : ethernetPorts) {
+                ((EthernetPort) ethernetPort).setIpAddress(allAddresses[i++] + "/16");
             }
 
         }
@@ -62,8 +61,7 @@ public class GraphController {
 
     public void setupMplsPathForAllEdges() {
 
-        List<AbstractNode> computeNodes = databaseController.getAllNodesByType(NodeType.COMPUTE_NODE);
-
+        topologyController.setupMplsShortestPath();
 
     }
 

@@ -55,9 +55,9 @@ public class Internet extends AbstractDevice {
 
         String destinationIp = packet.getDestinationIp();
 
-        for (EthernetPort port : this.getEthernetPorts()) {
-            if (port.getSubnetUtils().getInfo().isInRange(destinationIp)) {
-                return port;
+        for (ForwardingPort port : this.getForwardingPorts()) {
+            if (((EthernetPort)port).getSubnetUtils().getInfo().isInRange(destinationIp)) {
+                return (EthernetPort) port;
             }
         }
 

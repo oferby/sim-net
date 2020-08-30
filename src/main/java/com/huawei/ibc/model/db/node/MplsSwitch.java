@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class MplsSwitch extends AbstractDevice implements ForwardingDevice{
@@ -40,5 +41,20 @@ public class MplsSwitch extends AbstractDevice implements ForwardingDevice{
     @Override
     public void portDown(ForwardingPort port) {
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        MplsSwitch that = (MplsSwitch) o;
+        return Objects.equals(log, that.log) &&
+                Objects.equals(mplsForwardTable, that.mplsForwardTable);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), log, mplsForwardTable);
     }
 }
