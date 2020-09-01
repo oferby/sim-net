@@ -45,6 +45,18 @@ public class DatabaseControllerImpl {
         return nodeMap.get(id.toLowerCase());
     }
 
+    public AbstractDevice getDeviceById(String id) {
+
+        AbstractNode node = nodeMap.get(id.toLowerCase());
+
+        if (node instanceof AbstractDevice)
+            return (AbstractDevice) node;
+
+        return null;
+
+    }
+
+
     public <T extends AbstractNode> T getNodeByIdAndType(String id, Class<T> type) {
         return type.cast(nodeMap.get(id.toLowerCase()));
     }
@@ -59,6 +71,21 @@ public class DatabaseControllerImpl {
         }
 
         return nodes;
+
+    }
+
+    public List<AbstractDevice> getAllDevicesByType(NodeType type) {
+
+        List<AbstractDevice> deviceList = new LinkedList<>();
+
+        for (AbstractNode node : nodeMap.values()) {
+
+            if (node.getNodeType().equals(type) && node instanceof AbstractDevice)
+                deviceList.add((AbstractDevice) node);
+
+        }
+
+        return deviceList;
 
     }
 

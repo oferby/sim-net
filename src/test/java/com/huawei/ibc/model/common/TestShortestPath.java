@@ -5,11 +5,13 @@ import com.huawei.ibc.message.IntentMessage;
 import com.huawei.ibc.model.client.GraphEntity;
 import com.huawei.ibc.model.controller.GraphController;
 import com.huawei.ibc.model.controller.TopologyControllerImpl;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.servlet.tags.EditorAwareTag;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -25,18 +27,22 @@ public class TestShortestPath {
     @Autowired
     private GraphController graphController;
 
-    @Test
-    public void testShortestPath(){
+    @Before
+    public void setup() {
 
         IntentMessage intentMessage = new IntentMessage();
         intentMessage.setIntent("buildMplsDemo");
 
-        List<GraphEntity> graphEntityList = graphController.getGraphEntity(intentMessage);
+        graphController.getGraphEntity(intentMessage);
 
-//        topologyController.findShortestPath("vm1", "vm2");
+    }
+
+    @Test
+    public void testPossiblePath(){
 
         List<MplsPathDescriptor> numberOfPossiblePaths = topologyController.findNumberOfPossiblePaths("vm1", Integer.MAX_VALUE);
         System.out.println("number of possible paths for VM1 is: " + numberOfPossiblePaths.size());
+        System.out.println("number of paths to VM300: " + findNumberOdPathToEndVm(numberOfPossiblePaths));
 
         Collections.sort(numberOfPossiblePaths);
 
@@ -47,9 +53,35 @@ public class TestShortestPath {
 
         numberOfPossiblePaths = topologyController.findNumberOfPossiblePaths("vm1", 4);
         System.out.println("number of possible paths for VM1 using 4 max length is: " + numberOfPossiblePaths.size());
+        System.out.println("number of paths to VM300: " + findNumberOdPathToEndVm(numberOfPossiblePaths));
 
         numberOfPossiblePaths = topologyController.findNumberOfPossiblePaths("vm1", 3);
         System.out.println("number of possible paths for VM1 using 3 max length is: " + numberOfPossiblePaths.size());
+        System.out.println("number of paths to VM300: " + findNumberOdPathToEndVm(numberOfPossiblePaths));
+
+    }
+
+    private int findNumberOdPathToEndVm(List<MplsPathDescriptor> numberOfPossiblePaths) {
+
+        String endVM = "vm300";
+
+        int i = 0;
+
+        for (MplsPathDescriptor possiblePath : numberOfPossiblePaths) {
+            if (possiblePath.getEnd().getId().equals(endVM))
+                i++;
+        }
+
+        return i;
+    }
+
+    @Test
+    public void testShortestPath() {
+
+        TopologyMessage shortestPath = topologyController.findShortestPath("vm1", "vm300");
+
+
+
 
     }
 

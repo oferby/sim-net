@@ -1,9 +1,6 @@
 package com.huawei.ibc.model.controller;
 
-import com.huawei.ibc.model.common.AccessType;
-import com.huawei.ibc.model.common.MplsPathDescriptor;
-import com.huawei.ibc.model.common.NodeType;
-import com.huawei.ibc.model.common.TopologyMessage;
+import com.huawei.ibc.model.common.*;
 import com.huawei.ibc.model.db.node.*;
 import com.huawei.ibc.model.db.protocol.MACAddress;
 import com.huawei.ibc.model.db.protocol.PathDiscoveryPacket;
@@ -50,13 +47,57 @@ public class TopologyControllerImpl {
 
     public TopologyMessage findShortestPath(String source, String destination) {
 
+        List<AbstractDevice> mplsSwitchList = databaseController.getAllDevicesByType(NodeType.MPLS_SWITCH);
+        AbstractDevice start = databaseController.getDeviceById(source);
+        AbstractDevice end = databaseController.getDeviceById(destination);
+
+        ShortestPathDescriptor pathDescriptor = new ShortestPathDescriptor();
+        pathDescriptor.setStart((VirtualMachine) start);
+        pathDescriptor.setEnd((VirtualMachine) end);
+        pathDescriptor.addUnvisited(mplsSwitchList);
+
+        this.calculateShortestPath(pathDescriptor);
+
+        return this.getTopology(pathDescriptor);
+    }
+
+    private void calculateShortestPath(ShortestPathDescriptor pathDescriptor) {
+
+        List<AbstractDevice> connectedDeviceList = pathDescriptor.getStart().getConnectedDeviceList();
+
+        for (AbstractDevice startDevice : connectedDeviceList) {
+
+            this.calculateShortestPath(pathDescriptor,startDevice);
+
+        }
+
+    }
+
+    private void calculateShortestPath(ShortestPathDescriptor pathDescriptor, AbstractDevice startDevice) {
+
+        List<AbstractDevice> connectedDevices = startDevice.getConnectedDeviceList();
+
+        for (AbstractDevice connectedDevice : connectedDevices) {
+            if ( connectedDevice instanceof MplsSwitch) {
+                pathDescriptor.updateCost(startDevice, connectedDevice, startDevice, 1);
+            }
+
+        }
+
+
+    }
+
+
+
+
+    private TopologyMessage getTopology(ShortestPathDescriptor pathDescriptor) {
+
         TopologyMessage topologyMessage = new TopologyMessage();
 
-        List<AbstractNode> mplsSwitchList = databaseController.getAllNodesByType(NodeType.MPLS_SWITCH);
 
-        AbstractNode start = databaseController.getNodeById(source);
 
         return topologyMessage;
+
     }
 
     private PathDiscoveryPacket getDiscoveryPacket(String source, String destination) {

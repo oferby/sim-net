@@ -26,7 +26,7 @@ public abstract class AbstractDevice extends AbstractNode implements ForwardingD
         this.portList = portList;
     }
 
-    public List<String> getConnectedDevice() {
+    public List<String> getConnectedDeviceIds() {
 
         List<String> connectedDeviceList = new ArrayList<>();
         for (ForwardingPort port : portList) {
@@ -34,6 +34,17 @@ public abstract class AbstractDevice extends AbstractNode implements ForwardingD
         }
 
         return connectedDeviceList;
+
+    }
+
+    public List<AbstractDevice> getConnectedDeviceList() {
+
+        List<AbstractDevice> deviceList = new LinkedList<>();
+        for (ForwardingPort port : portList) {
+            deviceList.add(port.getConnectedPort().getPortDevice());
+        }
+
+        return deviceList;
 
     }
 
