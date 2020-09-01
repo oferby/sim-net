@@ -13,6 +13,8 @@ import org.apache.commons.net.util.SubnetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Controller;
 
 import java.util.*;
@@ -37,6 +39,10 @@ public class GraphController {
     @Autowired
     private PolicyController policyController;
 
+    @Autowired
+    @Qualifier("threadPoolTaskExecutor")
+    private TaskExecutor taskExecutor;
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public void setupEdgeIpAddress() {
@@ -59,9 +65,13 @@ public class GraphController {
 
     }
 
-    public void setupMplsPathForAllEdges() {
+    public void setupMplsPathForAllEdges(String algorithm) {
 
-        topologyController.setupMplsShortestPath();
+        if (algorithm.equals("1"))
+            taskExecutor.execute(() -> topologyController.setupMplsShortestPathDepthFirst());
+        else if (algorithm.equals("2"))
+            taskExecutor.execute(() -> topologyController.setupMplsShortestPathDijkstra());
+
 
     }
 
@@ -106,7 +116,7 @@ public class GraphController {
                     this.deleteAll(intentMessage);
                     return null;
                 case "showAll":
-                    return showAll(intentMessage, graphEntityList);
+                    return showAll();
                 case "addFirewall":
                     graphEntityList.add(addFirewall(intentMessage));
                     return graphEntityList;
@@ -143,7 +153,6 @@ public class GraphController {
 
         throw new RuntimeException("not supported!");
     }
-
 
     private void addFirewallRule(IntentMessage intentMessage) {
 
@@ -247,7 +256,6 @@ public class GraphController {
 
     }
 
-
     private Set<GraphEntity> getPolicy(Policy policy) {
 
         Set<GraphEntity> graphEntities = new HashSet<>();
@@ -285,7 +293,6 @@ public class GraphController {
         return graphEntities;
     }
 
-
     private void sendDeleteNode(String nodeId) {
 
         IntentMessage intentMessage = new IntentMessage();
@@ -315,9 +322,16 @@ public class GraphController {
         webSockService.sendClearLocalIntent();
     }
 
-    private List<GraphEntity> showAll(IntentMessage intentMessage, List<GraphEntity> graphEntityList) {
+    private List<GraphEntity> showAll() {
 
         webSockService.sendClearLocalIntent();
+
+        return this.getAllGraphEntities();
+
+    }
+
+    private List<GraphEntity> getAllGraphEntities() {
+        List<GraphEntity> graphEntityList = new LinkedList<>();
 
         Collection<AbstractDevice> devices = databaseController.getAllDevices();
         Set<GraphEdge> graphEdgeSet = new HashSet<>();
@@ -337,8 +351,8 @@ public class GraphController {
         graphEntityList.addAll(graphEdgeSet);
 
         return graphEntityList;
-    }
 
+    }
 
     private List<GraphEntity> createNodeConnection(IntentMessage intentMessage) {
 
@@ -386,7 +400,6 @@ public class GraphController {
         return entities;
     }
 
-
     private GraphEntity addVm(IntentMessage intentMessage) {
 
         VirtualMachine vm = databaseController.createVirtualMachine(this.getNodeName(intentMessage));
@@ -416,7 +429,6 @@ public class GraphController {
         Firewall firewall = databaseController.createFirewall(this.getNodeName(intentMessage));
         return this.createGraphNode(firewall);
     }
-
 
     private String getNodeName(IntentMessage intentMessage) {
 
@@ -525,12 +537,10 @@ public class GraphController {
 
     }
 
-
     private GraphEdge createGraphEdge(AbstractNode source, AbstractNode target) {
 
         return this.createGraphEdge(source.getId(), target.getId());
     }
-
 
     private GraphEdge createGraphEdge(String sourceId, String targetId) {
 
@@ -552,7 +562,6 @@ public class GraphController {
         return edge;
     }
 
-
     private List<GraphEntity> createApplication(IntentMessage intentMessage) {
 
         List<GraphEntity> entities = new ArrayList<>();
@@ -571,7 +580,6 @@ public class GraphController {
 
         return entities;
     }
-
 
     private List<GraphEntity> buildDemo2(IntentMessage intentMessage) {
 
@@ -801,7 +809,6 @@ public class GraphController {
         return entities;
 
     }
-
 
     private List<GraphEntity> addToGroup(IntentMessage intentMessage) {
 

@@ -34,7 +34,7 @@ zn  returns [Map<String,String> values]
         ;
 
 configCommand returns [Map<String,String> values]
-        : ( config | setup ) (p = ip | (m=protocol) searchble )
+        : ( config | setup ) (p = ip | (m=protocol) searchble (n=num)? )
         {
                 $values = new HashMap<String,String>();
                 $values.put("operator", "config");
@@ -42,6 +42,10 @@ configCommand returns [Map<String,String> values]
                     $values.put("configure", "ip");
                 if ($m.text != null && $m.text.equals("mpls"))
                     $values.put("configure", "mpls-path");
+                if ($n.text==null)
+                    $values.put("algorithm", "1");
+                else
+                    $values.put("algorithm", $n.text);
 
         };
 
@@ -93,12 +97,14 @@ delCommand returns [Map<String,String> values]
 
 
 findPathCommand returns [Map<String,String> values]
-        : ( search | show ) searchble from f=name to t=name
+        : ( search | show ) (s=shortest)? searchble from f=name to t=name
             {
                 $values = new HashMap<String,String>();
                 $values.put("operator", "findPath");
                 $values.put("from", $f.text);
                 $values.put("to", $t.text);
+                if ($s.text != null)
+                    $values.put("kind", "shortest");
             }
         ;
 
@@ -215,6 +221,7 @@ name        : NAME ;
 searchble   : SEARCHABLE ;
 setup       : SETUP;
 config      : CONFIG;
+shortest       : SHORTEST;
 
 
 /*
@@ -237,6 +244,7 @@ TRAFFIC     : 'traffic';
 NEW         : 'new';
 POLICY      : ( 'policy' | 'policies' ) ;
 GROUP       : 'group' 's'? ;
+SHORTEST       : ( 'shortest' | 'short' );
 
 SHOW        : ( 'show' |  'get' ) ;
 CLEAR       : 'clear' ;

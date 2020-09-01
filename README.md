@@ -8,11 +8,16 @@ The following commands add 2 VMs and connect them with switch and a router
 - add vm
 - connect node10 and node11
 
-# MPLS demo
-- create demo 3
-
 # configure connected VMs with IP
 if the VMs are not connected to a router, they will not get IP address.
-in order to configure the VMs with IP address, run the command:
+in order to configure the VMs with static IP address, run the command:
 - config ip
 
+# MPLS demo
+- create demo 3 (Small) or 4 (Large)
+
+# MPLS setup LSP
+- config mpls path X
+where X is algorithm number
+1 for dept first
+2 for Dijkstra

@@ -4,11 +4,12 @@ import com.huawei.ibc.model.db.node.*;
 
 import java.util.*;
 
-public class MplsPathDescriptor {
+public class MplsPathDescriptor implements Comparable<MplsPathDescriptor>{
 
     private VirtualMachine start;
     private VirtualMachine end;
-    private Set<MplsSwitch> devicesInPath = new HashSet<>();
+    private Set<MplsSwitch> devicesInPathSet = new HashSet<>();
+    private List<MplsSwitch> deviceInPath = new LinkedList<>();
     private List<ForwardingPort> portList = new LinkedList<>();
 
     public VirtualMachine getStart() {
@@ -27,12 +28,17 @@ public class MplsPathDescriptor {
         this.end = end;
     }
 
-    public Set<MplsSwitch> getDevicesInPath() {
-        return devicesInPath;
+    public Set<MplsSwitch> getDevicesInPathSet() {
+        return devicesInPathSet;
+    }
+
+    public List<MplsSwitch> getDeviceInPath() {
+        return deviceInPath;
     }
 
     public void addDevicesInPath(MplsSwitch devicesInPath) {
-        this.devicesInPath.add(devicesInPath);
+        this.devicesInPathSet.add(devicesInPath);
+        this.deviceInPath.add(devicesInPath);
     }
 
     public List<ForwardingPort> getPortList() {
@@ -50,13 +56,13 @@ public class MplsPathDescriptor {
         MplsPathDescriptor that = (MplsPathDescriptor) o;
         return Objects.equals(start, that.start) &&
                 Objects.equals(end, that.end) &&
-                Objects.equals(devicesInPath, that.devicesInPath) &&
+                Objects.equals(devicesInPathSet, that.devicesInPathSet) &&
                 Objects.equals(portList, that.portList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(start, end, devicesInPath, portList);
+        return Objects.hash(start, end, devicesInPathSet, portList);
     }
 
     public MplsPathDescriptor copy() {
@@ -65,7 +71,8 @@ public class MplsPathDescriptor {
 
         pathDescriptor.start = this.start;
         pathDescriptor.end = this.end;
-        pathDescriptor.devicesInPath = new HashSet<>(this.devicesInPath);
+        pathDescriptor.devicesInPathSet = new HashSet<>(this.devicesInPathSet);
+        pathDescriptor.deviceInPath = new LinkedList<>(this.deviceInPath);
         pathDescriptor.portList = new LinkedList<>(this.portList);
 
         return pathDescriptor;
@@ -78,8 +85,15 @@ public class MplsPathDescriptor {
         return "PathDescriptor{" +
                 "start=" + start +
                 ", end=" + end +
-                ", devicesInPath=" + devicesInPath +
+                ", devicesInPath=" + devicesInPathSet +
                 ", portList=" + portList +
                 '}';
+    }
+
+    @Override
+    public int compareTo(MplsPathDescriptor other) {
+
+        return Integer.compare(this.deviceInPath.size(), other.deviceInPath.size());
+
     }
 }

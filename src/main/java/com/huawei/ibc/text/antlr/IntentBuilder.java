@@ -113,7 +113,7 @@ public class IntentBuilder {
         if (configType.equals("ip"))
             graphController.setupEdgeIpAddress();
         else if (configType.equals("mpls-path"))
-            graphController.setupMplsPathForAllEdges();
+            graphController.setupMplsPathForAllEdges(this.values.get("algorithm"));
 
     }
 
@@ -197,7 +197,6 @@ public class IntentBuilder {
 
     }
 
-
     private void addVm() {
 
         if (this.values.containsKey("default")) {
@@ -248,6 +247,8 @@ public class IntentBuilder {
     private void findPathIntent() {
         intentMessage.addParam("from", this.values.get("from"));
         intentMessage.addParam("to", this.values.get("to"));
+        if (this.values.containsKey("kind"))
+            intentMessage.addParam("kind",this.values.get("kind"));
 
         this.sendIntentWithReturn("findPath");
 
@@ -286,7 +287,6 @@ public class IntentBuilder {
         this.accessIntent();
     }
 
-
     private void accessIntent() {
 
         if (this.values.containsKey("all"))
@@ -301,7 +301,6 @@ public class IntentBuilder {
         this.sendSimpleIntent("addFirewallRule");
 
     }
-
 
     private void demoIntent() {
 
@@ -332,7 +331,6 @@ public class IntentBuilder {
         sockService.sendGraphEntities(graphEntities);
     }
 
-
     private void addApplication() {
 
         throw new RuntimeException("not implemented");
@@ -357,7 +355,6 @@ public class IntentBuilder {
         this.sendIntentWithReturn("addToGroup");
 
     }
-
 
     private void sendNamedIntent(String intent) {
         this.intentMessage.setIntent(intent);
@@ -384,7 +381,6 @@ public class IntentBuilder {
         sockService.sendGraphEntities(graphEntities);
 
     }
-
 
     private void handleInputError() {
         this.sockService.sendUnknownInput();

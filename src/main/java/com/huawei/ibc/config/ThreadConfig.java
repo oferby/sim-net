@@ -12,7 +12,7 @@ public class ThreadConfig {
     public TaskExecutor threadPoolTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(4);
-        executor.setMaxPoolSize(4);
+        executor.setMaxPoolSize(100);
         executor.setThreadNamePrefix("ibn_");
         executor.initialize();
         return executor;

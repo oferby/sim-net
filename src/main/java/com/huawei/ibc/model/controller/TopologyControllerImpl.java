@@ -48,6 +48,16 @@ public class TopologyControllerImpl {
 
     }
 
+    public TopologyMessage findShortestPath(String source, String destination) {
+
+        TopologyMessage topologyMessage = new TopologyMessage();
+
+        List<AbstractNode> mplsSwitchList = databaseController.getAllNodesByType(NodeType.MPLS_SWITCH);
+
+        AbstractNode start = databaseController.getNodeById(source);
+
+        return topologyMessage;
+    }
 
     private PathDiscoveryPacket getDiscoveryPacket(String source, String destination) {
 
@@ -151,24 +161,44 @@ public class TopologyControllerImpl {
 
     }
 
-    public void setupMplsShortestPath() {
+    public void setupMplsShortestPathDijkstra() {
 
-        List<MplsPathDescriptor> allPossiblePaths = new LinkedList<>();
+        List<AbstractNode> allMplsSwitches = databaseController.getAllNodesByType(NodeType.MPLS_SWITCH);
 
-        List<AbstractNode> allVMs = databaseController.getAllNodesByType(NodeType.COMPUTE_NODE);
 
-        for (AbstractNode vm : allVMs) {
-            List<MplsPathDescriptor> allPathsFromVm = this.findAllPathsFromVm((VirtualMachine) vm);
-            allPossiblePaths.addAll(allPathsFromVm);
-        }
 
-        logger.debug("found all paths for all VMs. Number of paths found: " + allPossiblePaths.size());
-
-        this.setupMplsPath(allPossiblePaths);
 
     }
 
-    private List<MplsPathDescriptor> findAllPathsFromVm(VirtualMachine start) {
+
+    public void setupMplsShortestPathDepthFirst() {
+
+        logger.debug("searching for all paths");
+
+//        List<MplsPathDescriptor> allPossiblePaths = new LinkedList<>();
+
+        List<AbstractNode> allVMs = databaseController.getAllNodesByType(NodeType.COMPUTE_NODE);
+        List<MplsPathDescriptor> allPathsFromVm = null;
+        for (AbstractNode vm : allVMs) {
+            allPathsFromVm = this.findAllPathsFromVm((VirtualMachine) vm, 3);
+//            allPossiblePaths.addAll(allPathsFromVm);
+            break;
+        }
+
+        assert allPathsFromVm != null;
+        logger.debug("found all paths for all VMs. Number of paths found: " + allPathsFromVm.size());
+
+        this.setupMplsPath(allPathsFromVm);
+
+    }
+
+    public List<MplsPathDescriptor> findNumberOfPossiblePaths(String vmId, int maxLength) {
+
+        VirtualMachine startVm = (VirtualMachine) databaseController.getNodeById(vmId);
+        return this.findAllPathsFromVm(startVm, maxLength);
+    }
+
+    private List<MplsPathDescriptor> findAllPathsFromVm(VirtualMachine start, int maxLength) {
 
         List<MplsPathDescriptor> mplsPathDescriptors = new LinkedList<>();
 
@@ -179,7 +209,7 @@ public class TopologyControllerImpl {
             pathDescriptor = new MplsPathDescriptor();
             pathDescriptor.setStart(start);
 
-            this.findNextDevice(forwardingPort, pathDescriptor, mplsPathDescriptors);
+            this.findNextDevice(forwardingPort, pathDescriptor, mplsPathDescriptors, 0, maxLength);
 
         }
 
@@ -187,7 +217,7 @@ public class TopologyControllerImpl {
         return mplsPathDescriptors;
     }
 
-    private void findNextDevice(ForwardingPort egressPort, MplsPathDescriptor mplsPathDescriptor, List<MplsPathDescriptor> mplsPathDescriptors) {
+    private void findNextDevice(ForwardingPort egressPort, MplsPathDescriptor mplsPathDescriptor, List<MplsPathDescriptor> mplsPathDescriptors, int step, int maxLength) {
 
         if (egressPort.getConnectedPort() == null)
             return;
@@ -203,12 +233,17 @@ public class TopologyControllerImpl {
             return;
         }
 
-        MplsSwitch mplsSwitch = (MplsSwitch) ingressPort.getPortDevice();
-
-        if (mplsPathDescriptor.getDevicesInPath().contains(mplsSwitch))
+        if (step == maxLength)
             return;
 
+        MplsSwitch mplsSwitch = (MplsSwitch) ingressPort.getPortDevice();
+
+        if (mplsPathDescriptor.getDevicesInPathSet().contains(mplsSwitch))
+            return;
+
+
         mplsPathDescriptor.addDevicesInPath(mplsSwitch);
+        step++;
 
         for (ForwardingPort forwardingPort : mplsSwitch.getForwardingPorts()) {
 
@@ -216,12 +251,13 @@ public class TopologyControllerImpl {
                 continue;
 
             MplsPathDescriptor newPathDescriptor = mplsPathDescriptor.copy();
-            this.findNextDevice(forwardingPort, newPathDescriptor, mplsPathDescriptors);
+            this.findNextDevice(forwardingPort, newPathDescriptor, mplsPathDescriptors, step, maxLength);
             }
 
     }
 
-    private void setupMplsPath(List<MplsPathDescriptor> allPossiblePaths){
+    private void setupMplsPath(List<MplsPathDescriptor> allPossiblePaths) {
+
 
     }
 
