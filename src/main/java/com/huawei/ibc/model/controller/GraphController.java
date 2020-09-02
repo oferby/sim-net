@@ -294,15 +294,6 @@ public class GraphController {
         return graphEntities;
     }
 
-    private void sendDeleteNode(String nodeId) {
-
-        IntentMessage intentMessage = new IntentMessage();
-        intentMessage.setStatus(IntentStatus.LOCAL);
-        intentMessage.setIntent("deleteNode");
-        intentMessage.addParam("id", nodeId);
-        webSockService.sendIntent(intentMessage);
-    }
-
     private void disconnectNodes(IntentMessage intentMessage) {
 
         String sourceId = intentMessage.getParamValue("source");
@@ -316,19 +307,19 @@ public class GraphController {
 
     }
 
-    private List<GraphEntity> delete(IntentMessage intentMessage) {
+    private void delete(IntentMessage intentMessage) {
         String name = intentMessage.getParamValue("name");
+
         if (name.equals("all")) {
             databaseController.deleteAll();
             addressController.clearAll();
             webSockService.sendClearLocalIntent();
-            return null;
+            return;
 
         }
 
         databaseController.deleteNodeById(name);
         webSockService.sendDeleteNode(name);
-        return null;
     }
 
     private List<GraphEntity> showAll() {
@@ -672,8 +663,8 @@ public class GraphController {
         List<GraphEntity> entities = new ArrayList<>();
         List<MplsSwitch> mplsSwitches = new ArrayList<>();
 
-        for (int i = 0; i < 4; i++) {
-            MplsSwitch mplsSwitch = databaseController.createMplsSwitch("SW" + i);
+        for (int i = 0; i < 6; i++) {
+            MplsSwitch mplsSwitch = databaseController.createMplsSwitch("sw" + i);
             mplsSwitches.add(mplsSwitch);
             entities.add(createGraphNode(mplsSwitch));
         }
@@ -687,15 +678,30 @@ public class GraphController {
             }
         }
 
-        MplsSwitch sw = (MplsSwitch) databaseController.getNodeById("SW1");
+        MplsSwitch start = (MplsSwitch) databaseController.getNodeById("sw4");
+        MplsSwitch end = (MplsSwitch) databaseController.getNodeById("sw0");
+        databaseController.createNodeConnection(start, end);
+        entities.add(createGraphEdge(start, end));
+        end = (MplsSwitch) databaseController.getNodeById("sw1");
+        databaseController.createNodeConnection(start, end);
+        entities.add(createGraphEdge(start, end));
 
+        start = (MplsSwitch) databaseController.getNodeById("sw5");
+        end = (MplsSwitch) databaseController.getNodeById("sw2");
+        databaseController.createNodeConnection(start, end);
+        entities.add(createGraphEdge(start, end));
+        end = (MplsSwitch) databaseController.getNodeById("sw3");
+        databaseController.createNodeConnection(start, end);
+        entities.add(createGraphEdge(start, end));
+
+
+        MplsSwitch sw = (MplsSwitch) databaseController.getNodeById("sw4");
         VirtualMachine virtualMachine = databaseController.createVirtualMachine("vm1");
         entities.add(createGraphNode(virtualMachine));
         databaseController.createNodeConnection(sw, virtualMachine);
         entities.add(createGraphEdge(sw, virtualMachine));
 
-        sw = (MplsSwitch) databaseController.getNodeById("SW2");
-
+        sw = (MplsSwitch) databaseController.getNodeById("sw5");
         virtualMachine = databaseController.createVirtualMachine("vm2");
         entities.add(createGraphNode(virtualMachine));
         databaseController.createNodeConnection(sw, virtualMachine);

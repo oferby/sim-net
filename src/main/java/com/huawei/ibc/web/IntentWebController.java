@@ -21,14 +21,12 @@ public class IntentWebController {
     private GraphController graphController;
 
     @MessageMapping("/getHint")
-//    @SendTo("/topic/hint")
     public void getHint(IntentMessage intentRequest){
 
         hintController.getHint(intentRequest);
     }
 
     @MessageMapping("/intent")
-//    @SendTo("/topic/graph")
     public void getIntent(IntentMessage intentMessage){
 
         graphController.getGraphEntity(intentMessage);
