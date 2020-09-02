@@ -212,25 +212,67 @@ public class DatabaseControllerImpl {
 
     }
 
+    public void deleteNodeById(String id) {
 
-    public void deleteNodeConnection(String sourceId, String targetId) {
+        if (!this.nodeMap.containsKey(id))
+            throw new RuntimeException("Node id not found");
+
+        AbstractNode node = this.nodeMap.get(id);
+
+        if (node instanceof AbstractDevice) {
+            List<ForwardingPort> portList = ((AbstractDevice) node).getPortList();
+            for (ForwardingPort port : portList) {
+                ForwardingPort otherPort = port.getConnectedPort();
+                AbstractDevice otherDevice = otherPort.getPortDevice();
+                otherDevice.deletePort(otherPort);
+            }
+
+        }
+
+        nodeMap.remove(id);
+
+    }
+
+    public String deleteNodeConnection(String sourceId, String targetId) {
 
         AbstractDevice sourceDevice = (AbstractDevice) nodeMap.get(sourceId.toLowerCase());
         if (sourceDevice == null)
             throw new RuntimeException("source id not found");
 
-        AbstractDevice targetDevice = (AbstractDevice) nodeMap.get(targetId.toLowerCase());
-        if (targetDevice == null) {
-            throw new RuntimeException("target id not found");
+        if (targetId == null && sourceDevice.getPortList().size() != 1) {
+            throw new RuntimeException("target not provided");
         }
 
-        for (ForwardingPort port : sourceDevice.getPortList()) {
-            if (port.getConnectedPort().getPortDevice().getId().equals(targetId)) {
+        if (targetId == null) {
+
+            List<ForwardingPort> portList = new ArrayList<>(sourceDevice.getPortList());
+            for (ForwardingPort port : portList) {
+                ForwardingPort otherPort = port.getConnectedPort();
+                AbstractDevice otherDevice = otherPort.getPortDevice();
+                targetId = otherDevice.getId();
+                otherDevice.deletePort(otherPort);
                 sourceDevice.deletePort(port);
-                targetDevice.deletePort(port.getConnectedPort());
-                break;
             }
+
+        } else {
+
+            AbstractDevice targetDevice = (AbstractDevice) nodeMap.get(targetId.toLowerCase());
+            if (targetDevice == null && sourceDevice.getPortList().size() != 1) {
+                throw new RuntimeException("unknown target");
+            }
+
+            for (ForwardingPort port : sourceDevice.getPortList()) {
+                if (port.getConnectedPort().getPortDevice().getId().equals(targetId)) {
+                    sourceDevice.deletePort(port);
+                    if (targetDevice != null)
+                        targetDevice.deletePort(port.getConnectedPort());
+                    break;
+                }
+            }
+
         }
+
+        return targetId;
 
     }
 

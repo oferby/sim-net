@@ -85,7 +85,7 @@ delCommand returns [Map<String,String> values]
                 $values = new HashMap<String,String>();
                 $values.put("operator", "delete");
                 if ($a.text != null )
-                    $values.put("all", "true");
+                    $values.put("name", "all");
                 else {
                     $values.put("name", $n.text);
                     if ($e.text != null)

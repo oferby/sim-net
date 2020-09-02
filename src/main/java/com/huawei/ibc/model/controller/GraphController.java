@@ -112,8 +112,8 @@ public class GraphController {
                 case "disconnectNodes":
                     this.disconnectNodes(intentMessage);
                     return null;
-                case "deleteAll":
-                    this.deleteAll(intentMessage);
+                case "delete":
+                    this.delete(intentMessage);
                     return null;
                 case "showAll":
                     return showAll();
@@ -151,6 +151,7 @@ public class GraphController {
             throw e;
         }
 
+        this.sendError("not supported!");
         throw new RuntimeException("not supported!");
     }
 
@@ -306,7 +307,7 @@ public class GraphController {
 
         String sourceId = intentMessage.getParamValue("source");
         String targetId = intentMessage.getParamValue("target");
-        databaseController.deleteNodeConnection(sourceId, targetId);
+        targetId = databaseController.deleteNodeConnection(sourceId, targetId);
 
         intentMessage.setStatus(IntentStatus.LOCAL);
         String id = this.createGraphEdge(sourceId, targetId).getId();
@@ -315,11 +316,19 @@ public class GraphController {
 
     }
 
-    private void deleteAll(IntentMessage intentMessage) {
+    private List<GraphEntity> delete(IntentMessage intentMessage) {
+        String name = intentMessage.getParamValue("name");
+        if (name.equals("all")) {
+            databaseController.deleteAll();
+            addressController.clearAll();
+            webSockService.sendClearLocalIntent();
+            return null;
 
-        databaseController.deleteAll();
-        addressController.clearAll();
-        webSockService.sendClearLocalIntent();
+        }
+
+        databaseController.deleteNodeById(name);
+        webSockService.sendDeleteNode(name);
+        return null;
     }
 
     private List<GraphEntity> showAll() {
@@ -834,7 +843,7 @@ public class GraphController {
         webSockService.sendIntent(intentMessage);
     }
 
-    private void sendInfo(String text){
+    private void sendInfo(String text) {
         webSockService.sendInfo(text);
     }
 

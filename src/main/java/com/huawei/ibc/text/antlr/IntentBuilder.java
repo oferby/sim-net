@@ -240,7 +240,8 @@ public class IntentBuilder {
 
     private void deleteIntent() {
 
-        this.sendSimpleIntent("deleteAll");
+        intentMessage.addParam("name",this.values.get("name"));
+        this.sendSimpleIntent("delete");
 
     }
 
@@ -378,7 +379,8 @@ public class IntentBuilder {
     private void sendIntentWithReturn() {
         intentMessage.setStatus(IntentStatus.DONE);
         List<GraphEntity> graphEntities = graphController.getGraphEntity(intentMessage);
-        sockService.sendGraphEntities(graphEntities);
+        if (graphEntities != null)
+            sockService.sendGraphEntities(graphEntities);
 
     }
 

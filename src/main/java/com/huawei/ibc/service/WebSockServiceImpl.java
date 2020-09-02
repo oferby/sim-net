@@ -33,6 +33,14 @@ public class WebSockServiceImpl {
         template.convertAndSend("/topic/hint", intentMessage);
     }
 
+    public void sendDeleteNode(String id){
+        IntentMessage intentMessage = new IntentMessage();
+        intentMessage.setStatus(IntentStatus.LOCAL);
+        intentMessage.setIntent("deleteNode");
+        intentMessage.addParam("id", id);
+        template.convertAndSend("/topic/hint", intentMessage);
+    }
+
     public void sendGraphEntities(List<GraphEntity> graphEntities) {
         template.convertAndSend("/topic/graph",graphEntities);
     }
@@ -42,7 +50,7 @@ public class WebSockServiceImpl {
         IntentMessage intentMessage = new IntentMessage();
         intentMessage.setStatus(IntentStatus.INFO);
         intentMessage.addParam("type", "unknownRequest");
-        intentMessage.addParam("question", "Sorry, did not understand your request. Please rephrase.");
+        intentMessage.addParam("text", "Sorry, did not understand your request. Please rephrase.");
         template.convertAndSend("/topic/hint",intentMessage);
     }
 
