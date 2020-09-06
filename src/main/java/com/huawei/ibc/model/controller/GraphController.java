@@ -9,6 +9,8 @@ import com.huawei.ibc.model.common.*;
 import com.huawei.ibc.model.db.node.*;
 import com.huawei.ibc.service.PolicyController;
 import com.huawei.ibc.service.WebSockServiceImpl;
+import javafx.collections.transformation.SortedList;
+import javafx.scene.media.MediaPlayer;
 import org.apache.commons.net.util.SubnetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,6 +77,34 @@ public class GraphController {
 
     }
 
+    public void calculateShortestPath(IntentMessage intentMessage) {
+
+        String from = intentMessage.getParamValue("from");
+
+        String to = null;
+        if (intentMessage.hasParam("to"))
+            to = intentMessage.getParamValue("to");
+
+        int limit = Integer.MAX_VALUE;
+        if (intentMessage.hasParam("maxLength"))
+            limit = Integer.parseInt(intentMessage.getParamValue("maxLength"));
+
+        List<MplsPathDescriptor> numberOfPossiblePaths = topologyController.findNumberOfPossiblePaths(from, to, limit);
+        Collections.sort(numberOfPossiblePaths);
+
+        int shortestPath = numberOfPossiblePaths.get(0).getDeviceInPath().size();
+        int size = numberOfPossiblePaths.size();
+        int last =  size - 1;
+        int longestPath = numberOfPossiblePaths.get(last).getDeviceInPath().size();
+
+        String s = "There are " + size + " paths from " + from;
+
+        if (to != null)
+            s = s + " to " + to;
+
+        this.sendInfo( s + ". Shortest path is " + shortestPath + ". Longest path is " + longestPath);
+    }
+
     public List<GraphEntity> getGraphEntity(IntentMessage intentMessage) {
 
         logger.debug("handling intent: " + intentMessage.toString());
@@ -91,7 +121,7 @@ public class GraphController {
                 case "buildDemo2":
                     return this.buildDemo2(intentMessage);
                 case "buildSmallMplsDemo":
-                    return this.buildSmallMplsDemo(intentMessage);
+                    return this.buildSmallMplsDemo();
                 case "buildMplsDemo":
                     return this.buildMplsDemo(intentMessage);
                 case "addVm":
@@ -657,7 +687,7 @@ public class GraphController {
         return entities;
     }
 
-    private List<GraphEntity> buildSmallMplsDemo(IntentMessage intentMessage) {
+    private List<GraphEntity> buildSmallMplsDemo() {
         webSockService.sendClearLocalIntent();
 
         List<GraphEntity> entities = new ArrayList<>();

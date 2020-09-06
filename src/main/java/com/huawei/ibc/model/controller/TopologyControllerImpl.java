@@ -221,7 +221,7 @@ public class TopologyControllerImpl {
         List<AbstractNode> allVMs = databaseController.getAllNodesByType(NodeType.COMPUTE_NODE);
         List<MplsPathDescriptor> allPathsFromVm = null;
         for (AbstractNode vm : allVMs) {
-            allPathsFromVm = this.findAllPathsFromVm((VirtualMachine) vm, 3);
+            allPathsFromVm = this.findAllPathsFromVm((VirtualMachine) vm, null, 3);
 //            allPossiblePaths.addAll(allPathsFromVm);
             break;
         }
@@ -236,10 +236,16 @@ public class TopologyControllerImpl {
     public List<MplsPathDescriptor> findNumberOfPossiblePaths(String vmId, int maxLength) {
 
         VirtualMachine startVm = (VirtualMachine) databaseController.getNodeById(vmId);
-        return this.findAllPathsFromVm(startVm, maxLength);
+        return this.findAllPathsFromVm(startVm, null, maxLength);
     }
 
-    private List<MplsPathDescriptor> findAllPathsFromVm(VirtualMachine start, int maxLength) {
+    public List<MplsPathDescriptor> findNumberOfPossiblePaths(String fromVmId, String toVmId, int maxLength) {
+
+        VirtualMachine startVm = (VirtualMachine) databaseController.getNodeById(fromVmId);
+        return this.findAllPathsFromVm(startVm, toVmId, maxLength);
+    }
+
+    private List<MplsPathDescriptor> findAllPathsFromVm(VirtualMachine start, String toVmId, int maxLength) {
 
         List<MplsPathDescriptor> mplsPathDescriptors = new LinkedList<>();
 
@@ -250,7 +256,7 @@ public class TopologyControllerImpl {
             pathDescriptor = new MplsPathDescriptor();
             pathDescriptor.setStart(start);
 
-            this.findNextDevice(forwardingPort, pathDescriptor, mplsPathDescriptors, 0, maxLength);
+            this.findNextDevice(forwardingPort, toVmId, pathDescriptor, mplsPathDescriptors, 0, maxLength);
 
         }
 
@@ -258,7 +264,8 @@ public class TopologyControllerImpl {
         return mplsPathDescriptors;
     }
 
-    private void findNextDevice(ForwardingPort egressPort, MplsPathDescriptor mplsPathDescriptor, List<MplsPathDescriptor> mplsPathDescriptors, int step, int maxLength) {
+    private void findNextDevice(ForwardingPort egressPort, String toVmId, MplsPathDescriptor mplsPathDescriptor,
+                                List<MplsPathDescriptor> mplsPathDescriptors, int step, int maxLength) {
 
         if (egressPort.getConnectedPort() == null)
             return;
@@ -269,8 +276,17 @@ public class TopologyControllerImpl {
         mplsPathDescriptor.addPort(ingressPort);
 
         if (ingressPort.getPortDevice() instanceof VirtualMachine) {
-            mplsPathDescriptor.setEnd((VirtualMachine) ingressPort.getPortDevice());
-            mplsPathDescriptors.add(mplsPathDescriptor);
+
+            VirtualMachine vm = (VirtualMachine) ingressPort.getPortDevice();
+
+            if (vm == mplsPathDescriptor.getStart())
+                return;
+
+            if (toVmId == null || vm.getId().equals(toVmId)) {
+                mplsPathDescriptor.setEnd(vm);
+                mplsPathDescriptors.add(mplsPathDescriptor);
+            }
+
             return;
         }
 
@@ -292,7 +308,7 @@ public class TopologyControllerImpl {
                 continue;
 
             MplsPathDescriptor newPathDescriptor = mplsPathDescriptor.copy();
-            this.findNextDevice(forwardingPort, newPathDescriptor, mplsPathDescriptors, step, maxLength);
+            this.findNextDevice(forwardingPort, toVmId, newPathDescriptor, mplsPathDescriptors, step, maxLength);
             }
 
     }

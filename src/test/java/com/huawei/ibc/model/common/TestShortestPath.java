@@ -31,7 +31,8 @@ public class TestShortestPath {
     public void setup() {
 
         IntentMessage intentMessage = new IntentMessage();
-        intentMessage.setIntent("buildMplsDemo");
+//        intentMessage.setIntent("buildMplsDemo");
+        intentMessage.setIntent("buildSmallMplsDemo");
 
         graphController.getGraphEntity(intentMessage);
 
@@ -78,10 +79,11 @@ public class TestShortestPath {
     @Test
     public void testShortestPath() {
 
-        TopologyMessage shortestPath = topologyController.findShortestPath("vm1", "vm300");
+        List<MplsPathDescriptor> numberOfPossiblePaths = topologyController.findNumberOfPossiblePaths("vm1", Integer.MAX_VALUE);
+        System.out.println("number of possible paths for VM1 is: " + numberOfPossiblePaths.size());
 
-
-
+        numberOfPossiblePaths = topologyController.findNumberOfPossiblePaths("vm1", "vm2", Integer.MAX_VALUE);
+        System.out.println("number of possible paths for VM1 is: " + numberOfPossiblePaths.size());
 
     }
 

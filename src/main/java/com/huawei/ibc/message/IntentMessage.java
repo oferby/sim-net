@@ -55,6 +55,9 @@ public class IntentMessage {
         return params.get(key);
     }
 
+    public boolean hasParam(String key){
+        return params.containsKey(key);
+    }
 
     public void setParams(Map<String, String> params) {
         this.params = params;

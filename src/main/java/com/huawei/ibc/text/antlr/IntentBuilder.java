@@ -97,6 +97,9 @@ public class IntentBuilder {
             case "addToGroup":
                 this.addToGroup();
                 break;
+            case "calculateShortestPath":
+                this.calculateShortestPath();
+                break;
 
             default:
                 throw new RuntimeException("unknown operator");
@@ -105,6 +108,17 @@ public class IntentBuilder {
 
     }
 
+    private void calculateShortestPath() {
+        intentMessage.addParam("from",this.values.get("from"));
+
+        if (this.values.containsKey("to"))
+            intentMessage.addParam("to",this.values.get("to"));
+
+        if (this.values.containsKey("maxLength"))
+            intentMessage.addParam("maxLength",this.values.get("maxLength"));
+
+        graphController.calculateShortestPath(this.intentMessage);
+    }
 
     private void configIntent() {
 

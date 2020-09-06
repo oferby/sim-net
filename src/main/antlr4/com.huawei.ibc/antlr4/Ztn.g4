@@ -30,8 +30,21 @@ zn  returns [Map<String,String> values]
         | clearCommand { $values = $clearCommand.values; }
         | setPolicyCommand { $values = $setPolicyCommand.values; }
         | addToGroupCommand { $values = $addToGroupCommand.values; }
+        | calculateShortestPathCommand { $values = $calculateShortestPathCommand.values; }
         )
         ;
+
+calculateShortestPathCommand returns [Map<String,String> values]
+        : calculate shortest searchble from fromName=name (to toName=name)? (max (length | searchble ) maxLength=num | limit maxLength=num)?
+        {
+            $values = new HashMap<String,String>();
+            $values.put("operator", "calculateShortestPath");
+            $values.put("from", $fromName.text);
+            if ($toName.text != null )
+                 $values.put("to", $toName.text);
+            if ($maxLength.text != null)
+                $values.put("maxLength", $maxLength.text);
+        };
 
 configCommand returns [Map<String,String> values]
         : ( config | setup ) (p = ip | (m=protocol) searchble (n=num)? )
@@ -49,7 +62,6 @@ configCommand returns [Map<String,String> values]
 
         };
 
-
 showCommand returns [Map<String,String> values]
         : show (a='all')? (e=extEntity)? (n=name)?
             {
@@ -64,7 +76,6 @@ showCommand returns [Map<String,String> values]
             }
         ;
 
-
 newCommand returns [Map<String,String> values]
         : newOperator NEW? e=extEntity (n=name)? (d='default')?
             {
@@ -77,7 +88,6 @@ newCommand returns [Map<String,String> values]
                     $values.put("default", "true");
             }
         ;
-
 
 delCommand returns [Map<String,String> values]
         : delOperator (a='all' | ((e=extEntity)? n=name))
@@ -94,7 +104,6 @@ delCommand returns [Map<String,String> values]
 
             }
         ;
-
 
 findPathCommand returns [Map<String,String> values]
         : ( search | show ) (s=shortest)? searchble from f=name to t=name
@@ -171,7 +180,6 @@ demoCommand returns [Map<String,String> values]
             }
         ;
 
-
 setPolicyCommand returns [Map<String,String> values]
         : 'set'? policy pn=name r=rights access from f=name to t=name
             {
@@ -194,7 +202,6 @@ addToGroupCommand returns [Map<String,String> values]
             }
         ;
 
-operator    : show | newOperator | search ;
 extEntity   : entity | policy | group;
 from        : FROM;
 to          : TO ;
@@ -221,7 +228,11 @@ name        : NAME ;
 searchble   : SEARCHABLE ;
 setup       : SETUP;
 config      : CONFIG;
-shortest       : SHORTEST;
+shortest    : SHORTEST;
+calculate   : CALCULATE;
+max         : MAX;
+limit       : LIMIT;
+length      : LENGTH;
 
 
 /*
@@ -269,6 +280,11 @@ MPLS        : 'mpls';
 DEMO        : 'demo' ;
 SETUP       : 'setup';
 CONFIG      : ( 'config' | 'configure' );
+
+CALCULATE   : ('calculate' | 'calc' );
+MAX         : 'max';
+LENGTH      : 'length';
+LIMIT       : 'limit';
 
 NEWLINE     : ('\r'? '\n' | '\r')+ ;
 NAME        : ( LOWERCASE | UPPERCASE | DIGIT | '_' | '-')+ ;
