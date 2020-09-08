@@ -3,7 +3,6 @@ package com.huawei.ibc.model.common;
 import com.huawei.ibc.model.db.node.AbstractDevice;
 import com.huawei.ibc.model.db.node.AbstractNode;
 import com.huawei.ibc.model.db.node.VirtualMachine;
-import com.sun.javafx.scene.control.skin.VirtualScrollBar;
 
 import java.util.*;
 

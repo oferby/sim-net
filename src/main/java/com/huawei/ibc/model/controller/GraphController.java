@@ -9,8 +9,6 @@ import com.huawei.ibc.model.common.*;
 import com.huawei.ibc.model.db.node.*;
 import com.huawei.ibc.service.PolicyController;
 import com.huawei.ibc.service.WebSockServiceImpl;
-import javafx.collections.transformation.SortedList;
-import javafx.scene.media.MediaPlayer;
 import org.apache.commons.net.util.SubnetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
